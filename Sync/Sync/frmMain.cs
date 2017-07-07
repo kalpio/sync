@@ -9,6 +9,8 @@ using Quartz;
 
 namespace Sync
 {
+    public delegate void ChangeMainStatusDelegate(string value);
+
     public partial class frmMain : Form
     {
         Settings settings;
@@ -40,6 +42,22 @@ namespace Sync
                 settings.ReplicaIdFolderA = Guid.NewGuid();
                 settings.ReplicaIdFolderB = Guid.NewGuid();
             }
+
+            SyncJob.ChangeMainStatusCallback += new ChangeMainStatusDelegate(changeStatus);
+        }
+
+        void changeStatus(string value)
+        {
+            if (lblStatusInWindow.InvokeRequired)
+            {
+                lblStatusInWindow.Invoke((MethodInvoker)delegate
+                {
+                    lblStatusInWindow.Text = value;
+                });
+            }
+            notify.Text = value;
+
+            Application.DoEvents();
         }
 
         private void btnAnuluj_Click(object sender, EventArgs e)
@@ -174,28 +192,17 @@ namespace Sync
 
             var triggerKey = $"trigger_{timestamp}";
 
-            var exp = "";
-            switch (settings.IntervalType)
-            {
-                case IntervalType.Minutes:
-                    exp = $"0 0/{settings.Interval} * 1/1 * ? *";
-                    break;
-                case IntervalType.Hourly:
-                    exp = $"0 0 0/{settings.Interval} 1/1 * ? *";
-                    break;
-                default:
-                    break;
-            }
-
             ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(triggerKey, "Workers")
-                .WithCronSchedule(exp)
-                .StartAt(DateTime.Now)
+                .WithCalendarIntervalSchedule((x) =>
+                {
+                    x.WithInterval(settings.Interval, (IntervalUnit)((int)settings.IntervalType));
+                })
+                .StartAt(settings.StartAt)
                 .WithPriority(1)
                 .Build();
 
             JobScheduler.Get().ScheduleJob(job, trigger);
-
         }
 
         private void notifyContextMenu_Open_Click(object sender, EventArgs e)
@@ -243,7 +250,7 @@ namespace Sync
             }
             else
             {
-                MessageBox.Show("Folder A - taki folder nie istnieje!", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Folder A - folder already exists!", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtFolderA.Focus();
                 txtFolderA.BackColor = Color.Red;
             }
@@ -258,10 +265,34 @@ namespace Sync
             }
             else
             {
-                MessageBox.Show("Folder B - taki folder nie istnieje!", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Folder B - folder already exists!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtFolderB.Focus();
                 txtFolderB.BackColor = Color.Red;
             }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            settings = new Settings();
+            txtFolderA.Text = settings.FolderA;
+            txtFolderB.Text = settings.FolderB;
+            txtInterval.Value = settings.Interval;
+            cmbIntervalType.SelectedIndex = (int)settings.IntervalType;
+            cmbDirection.SelectedIndex = (int)settings.Direction;
+            txtStartAtDate.Value = settings.StartAt.Date;
+            txtStartAtTime.Value = settings.StartAt.Date;
+        }
+
+        private void txtStartAtDate_ValueChanged(object sender, EventArgs e)
+        {
+            settings.StartAt = txtStartAtDate.Value.Date;
+        }
+
+        private void txtStartAtTime_ValueChanged(object sender, EventArgs e)
+        {
+            settings.StartAt = settings.StartAt
+                .AddHours(txtStartAtTime.Value.Hour)
+                .AddMinutes(txtStartAtTime.Value.Minute);
         }
     }
 }

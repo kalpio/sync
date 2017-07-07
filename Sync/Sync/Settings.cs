@@ -10,11 +10,12 @@ namespace Sync
     {
         public Settings()
         {
-            IntervalType = IntervalType.Minutes;
+            IntervalType = IntervalType.Minute;
             Direction = Direction.UploadAndDownload;
             ReplicaIdFolderA = Guid.Empty;
             ReplicaIdFolderB = Guid.Empty;
             Interval = 10;
+            StartAt = DateTime.Now;
         }
 
         public string FolderA { get; set; }
@@ -31,6 +32,8 @@ namespace Sync
 
         public Guid ReplicaIdFolderB { get; set; }
 
+        public DateTime StartAt { get; set; }
+
         public bool IsEmpty()
         {
             return (string.IsNullOrWhiteSpace(FolderA) || string.IsNullOrWhiteSpace(FolderB)) ||
@@ -42,11 +45,14 @@ namespace Sync
 
     enum IntervalType
     {
-        Minutes = 0,
-        Hourly,
-        Daily,
-        Weekly,
-        Monthly
+        Millisecond = 0,
+        Second = 1,
+        Minute = 2,
+        Hour = 3,
+        Day = 4,
+        Week = 5,
+        Month = 6,
+        Year = 7
     }
 
     enum Direction

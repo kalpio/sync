@@ -10,6 +10,8 @@ namespace Sync
     {
         public static bool IsWorking { get; set; }
 
+        public static ChangeMainStatusDelegate ChangeMainStatusCallback;
+        
         public void Execute(IJobExecutionContext context)
         {
             Logger logger = LogManager.GetCurrentClassLogger();
@@ -18,8 +20,17 @@ namespace Sync
 
             if (!settings.IsEmpty() && !IsWorking)
             {
+                string dt = "";
+                if (context.Trigger.GetNextFireTimeUtc().HasValue)
+                {
+                    dt = context.Trigger.GetNextFireTimeUtc().Value.ToLocalTime().ToString("d MMMM yyyy, HH:mm:ss");
+                }
+
+                var nextTimeDesc = string.IsNullOrWhiteSpace(dt) ? "" : $" Next at: {dt}";
+
                 try
                 {
+                    SyncJob.ChangeMainStatusCallback("Synchonization...");
                     var providerA = new FileSyncProvider(settings.ReplicaIdFolderA, settings.FolderA);
                     var providerB = new FileSyncProvider(settings.ReplicaIdFolderB, settings.FolderB);
 
@@ -38,9 +49,12 @@ namespace Sync
                             SyncDirectionOrder.Download
                     };
                     syncAgent.Synchronize();
+                    
+                    SyncJob.ChangeMainStatusCallback($"Up to date.{nextTimeDesc}");
                 }
                 catch (Exception ex)
                 {
+                    SyncJob.ChangeMainStatusCallback($"Synchronization error!{nextTimeDesc}");
                     logger.Error(ex);
                 }
                 finally
