@@ -111,9 +111,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.label1.Location = new System.Drawing.Point(12, 46);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 18);
+            this.label1.Size = new System.Drawing.Size(66, 18);
             this.label1.TabIndex = 4;
-            this.label1.Text = "folder [B]";
+            this.label1.Text = "folder [A]";
             // 
             // label2
             // 
@@ -288,7 +288,7 @@
             this.lblCopyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblCopyright.AutoSize = true;
             this.lblCopyright.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.lblCopyright.Location = new System.Drawing.Point(12, 324);
+            this.lblCopyright.Location = new System.Drawing.Point(12, 326);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(139, 17);
             this.lblCopyright.TabIndex = 16;

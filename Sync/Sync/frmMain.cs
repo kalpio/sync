@@ -34,7 +34,9 @@ namespace Sync
                 cmbDirection.SelectedIndex = (int)settings.Direction;
                 cmbIntervalType.SelectedIndex = (int)settings.IntervalType;
 
+#if !DEBUG
                 hideWindow();
+#endif
                 doSync();
             }
             else
@@ -53,9 +55,9 @@ namespace Sync
                 lblStatusInWindow.Invoke((MethodInvoker)delegate
                 {
                     lblStatusInWindow.Text = value;
+                    notify.Text = value;
                 });
             }
-            notify.Text = value;
 
             Application.DoEvents();
         }
