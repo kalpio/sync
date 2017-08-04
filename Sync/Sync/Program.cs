@@ -7,21 +7,21 @@ using System.Windows.Forms;
 
 namespace Sync
 {
-    static class Program
+    internal static class Program
     {
-        static Mutex mutex = new Mutex(true, "{917628D7-2BF2-4988-86F4-1F7918AB8771}");
+        private static Mutex mutex = new Mutex(true, "{917628D7-2BF2-4988-86F4-1F7918AB8771}");
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             if (mutex.WaitOne(TimeSpan.Zero, true))
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmMain());
+                Application.Run(new FrmMain());
             }
             else
             {

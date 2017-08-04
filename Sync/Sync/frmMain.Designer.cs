@@ -1,6 +1,6 @@
 ﻿namespace Sync
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.txtFolderA = new System.Windows.Forms.TextBox();
             this.txtFolderB = new System.Windows.Forms.TextBox();
             this.btnFolderA = new System.Windows.Forms.Button();
@@ -59,6 +59,8 @@
             this.label9 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
             this.lblStatusInWindow = new System.Windows.Forms.Label();
+            this.chkSkipDeleteFolderB = new System.Windows.Forms.CheckBox();
+            this.chkSkipDeleteFolderA = new System.Windows.Forms.CheckBox();
             this.notifyContextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtInterval)).BeginInit();
             this.SuspendLayout();
@@ -67,6 +69,7 @@
             // 
             this.txtFolderA.BackColor = System.Drawing.Color.White;
             this.txtFolderA.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.txtFolderA.ForeColor = System.Drawing.Color.Black;
             this.txtFolderA.Location = new System.Drawing.Point(140, 43);
             this.txtFolderA.Name = "txtFolderA";
             this.txtFolderA.Size = new System.Drawing.Size(413, 24);
@@ -77,6 +80,7 @@
             // 
             this.txtFolderB.BackColor = System.Drawing.Color.White;
             this.txtFolderB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.txtFolderB.ForeColor = System.Drawing.Color.Black;
             this.txtFolderB.Location = new System.Drawing.Point(140, 76);
             this.txtFolderB.Name = "txtFolderB";
             this.txtFolderB.Size = new System.Drawing.Size(413, 24);
@@ -141,7 +145,7 @@
             this.btnSave.BackColor = System.Drawing.SystemColors.Control;
             this.btnSave.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.btnSave.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSave.Location = new System.Drawing.Point(512, 265);
+            this.btnSave.Location = new System.Drawing.Point(512, 339);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(122, 41);
             this.btnSave.TabIndex = 8;
@@ -154,7 +158,7 @@
             this.btnAnuluj.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAnuluj.BackColor = System.Drawing.SystemColors.Control;
             this.btnAnuluj.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnAnuluj.Location = new System.Drawing.Point(422, 265);
+            this.btnAnuluj.Location = new System.Drawing.Point(422, 339);
             this.btnAnuluj.Name = "btnAnuluj";
             this.btnAnuluj.Size = new System.Drawing.Size(84, 41);
             this.btnAnuluj.TabIndex = 7;
@@ -177,24 +181,24 @@
             this.toolStripSeparator1,
             this.notifyContextMenu_Close});
             this.notifyContextMenu.Name = "notifyContextMenu";
-            this.notifyContextMenu.Size = new System.Drawing.Size(138, 62);
+            this.notifyContextMenu.Size = new System.Drawing.Size(132, 58);
             // 
             // notifyContextMenu_Open
             // 
             this.notifyContextMenu_Open.Name = "notifyContextMenu_Open";
-            this.notifyContextMenu_Open.Size = new System.Drawing.Size(137, 26);
+            this.notifyContextMenu_Open.Size = new System.Drawing.Size(131, 24);
             this.notifyContextMenu_Open.Text = "Otwórz";
             this.notifyContextMenu_Open.Click += new System.EventHandler(this.notifyContextMenu_Open_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(134, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(128, 6);
             // 
             // notifyContextMenu_Close
             // 
             this.notifyContextMenu_Close.Name = "notifyContextMenu_Close";
-            this.notifyContextMenu_Close.Size = new System.Drawing.Size(137, 26);
+            this.notifyContextMenu_Close.Size = new System.Drawing.Size(131, 24);
             this.notifyContextMenu_Close.Text = "Zamknij";
             this.notifyContextMenu_Close.Click += new System.EventHandler(this.notifyContextMenu_Close_Click);
             // 
@@ -268,7 +272,7 @@
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.label6.Location = new System.Drawing.Point(12, 321);
+            this.label6.Location = new System.Drawing.Point(12, 395);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(622, 1);
             this.label6.TabIndex = 14;
@@ -288,7 +292,7 @@
             this.lblCopyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblCopyright.AutoSize = true;
             this.lblCopyright.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.lblCopyright.Location = new System.Drawing.Point(12, 326);
+            this.lblCopyright.Location = new System.Drawing.Point(12, 400);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(139, 17);
             this.lblCopyright.TabIndex = 16;
@@ -299,7 +303,7 @@
             // 
             this.lblConfigPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblConfigPath.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.lblConfigPath.Location = new System.Drawing.Point(157, 324);
+            this.lblConfigPath.Location = new System.Drawing.Point(157, 398);
             this.lblConfigPath.Name = "lblConfigPath";
             this.lblConfigPath.Size = new System.Drawing.Size(471, 20);
             this.lblConfigPath.TabIndex = 17;
@@ -351,7 +355,7 @@
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnClear.BackColor = System.Drawing.SystemColors.Control;
             this.btnClear.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.btnClear.Location = new System.Drawing.Point(12, 265);
+            this.btnClear.Location = new System.Drawing.Point(12, 339);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(174, 41);
             this.btnClear.TabIndex = 22;
@@ -361,21 +365,46 @@
             // 
             // lblStatusInWindow
             // 
-            this.lblStatusInWindow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblStatusInWindow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblStatusInWindow.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblStatusInWindow.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.lblStatusInWindow.Location = new System.Drawing.Point(12, 226);
+            this.lblStatusInWindow.Location = new System.Drawing.Point(12, 286);
             this.lblStatusInWindow.Name = "lblStatusInWindow";
-            this.lblStatusInWindow.Size = new System.Drawing.Size(622, 28);
+            this.lblStatusInWindow.Size = new System.Drawing.Size(622, 50);
             this.lblStatusInWindow.TabIndex = 23;
             this.lblStatusInWindow.Text = "...";
             // 
-            // frmMain
+            // chkSkipDeleteFolderB
+            // 
+            this.chkSkipDeleteFolderB.AutoSize = true;
+            this.chkSkipDeleteFolderB.Location = new System.Drawing.Point(140, 247);
+            this.chkSkipDeleteFolderB.Name = "chkSkipDeleteFolderB";
+            this.chkSkipDeleteFolderB.Size = new System.Drawing.Size(205, 21);
+            this.chkSkipDeleteFolderB.TabIndex = 24;
+            this.chkSkipDeleteFolderB.Text = "Skip delete files in folder [B]";
+            this.chkSkipDeleteFolderB.UseVisualStyleBackColor = true;
+            this.chkSkipDeleteFolderB.CheckedChanged += new System.EventHandler(this.chkSkipDeleteFolderB_CheckedChanged);
+            // 
+            // chkSkipDeleteFolderA
+            // 
+            this.chkSkipDeleteFolderA.AutoSize = true;
+            this.chkSkipDeleteFolderA.Location = new System.Drawing.Point(140, 220);
+            this.chkSkipDeleteFolderA.Name = "chkSkipDeleteFolderA";
+            this.chkSkipDeleteFolderA.Size = new System.Drawing.Size(205, 21);
+            this.chkSkipDeleteFolderA.TabIndex = 25;
+            this.chkSkipDeleteFolderA.Text = "Skip delete files in folder [A]";
+            this.chkSkipDeleteFolderA.UseVisualStyleBackColor = true;
+            this.chkSkipDeleteFolderA.CheckedChanged += new System.EventHandler(this.chkSkipDeleteFolderA_CheckedChanged);
+            // 
+            // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(646, 353);
+            this.ClientSize = new System.Drawing.Size(646, 427);
+            this.Controls.Add(this.chkSkipDeleteFolderA);
+            this.Controls.Add(this.chkSkipDeleteFolderB);
             this.Controls.Add(this.lblStatusInWindow);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.label9);
@@ -400,10 +429,11 @@
             this.Controls.Add(this.btnFolderA);
             this.Controls.Add(this.txtFolderB);
             this.Controls.Add(this.txtFolderA);
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "frmMain";
+            this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Folder synchronization";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
@@ -445,6 +475,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Label lblStatusInWindow;
+        private System.Windows.Forms.CheckBox chkSkipDeleteFolderB;
+        private System.Windows.Forms.CheckBox chkSkipDeleteFolderA;
     }
 }
 

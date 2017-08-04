@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SQLite;
+using System.IO;
 
 namespace Sync
 {
-    class Settings
+    internal class Settings
     {
+        public const string BackupFolderName = "___backups";
+
         public Settings()
         {
             IntervalType = IntervalType.Minute;
@@ -16,6 +20,7 @@ namespace Sync
             ReplicaIdFolderB = Guid.Empty;
             Interval = 10;
             StartAt = DateTime.Now;
+            SkipDeleteInFolderB = false;
         }
 
         public string FolderA { get; set; }
@@ -28,6 +33,10 @@ namespace Sync
 
         public Direction Direction { get; set; }
 
+        public bool SkipDeleteInFolderB { get; set; }
+
+        public bool SkipDeleteInFolderA { get; set; }
+
         public Guid ReplicaIdFolderA { get; set; }
 
         public Guid ReplicaIdFolderB { get; set; }
@@ -36,14 +45,43 @@ namespace Sync
 
         public bool IsEmpty()
         {
-            return (string.IsNullOrWhiteSpace(FolderA) || string.IsNullOrWhiteSpace(FolderB)) ||
-                Interval <= 0 ||
-                ReplicaIdFolderA == Guid.Empty ||
-                ReplicaIdFolderB == Guid.Empty;
+            return string.IsNullOrWhiteSpace(FolderA) || string.IsNullOrWhiteSpace(FolderB) ||
+                   Interval <= 0 ||
+                   ReplicaIdFolderA == Guid.Empty ||
+                   ReplicaIdFolderB == Guid.Empty;
+        }
+
+        public static string GetSettingsDir()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "kalpio", "sync");
+        }
+
+        internal static string GetDbFilePath()
+        {
+            return Path.Combine(GetSettingsDir(), "sync.db");
+        }
+
+        public static string GetConnectionString()
+        {
+            var path = GetDbFilePath();
+
+            if (!File.Exists(path)) {
+                File.Create(path);
+            }
+
+            var model = new SQLiteConnectionStringBuilder
+            {
+                DataSource = path,
+                ForeignKeys = true,
+                DateTimeKind = DateTimeKind.Utc
+            };
+
+            return model.ConnectionString;
         }
     }
 
-    enum IntervalType
+    internal enum IntervalType
     {
         Millisecond = 0,
         Second = 1,
@@ -55,7 +93,7 @@ namespace Sync
         Year = 7
     }
 
-    enum Direction
+    internal enum Direction
     {
         Upload = 0,
         Download,

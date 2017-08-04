@@ -5,10 +5,10 @@ using Quartz.Impl;
 
 namespace Sync
 {
-    static class JobScheduler
+    internal static class JobScheduler
     {
-        static IScheduler _jobScheduler;
-        static ISchedulerFactory _schedulerFactory;
+        private static IScheduler _jobScheduler;
+        private static ISchedulerFactory _schedulerFactory;
 
         public static IScheduler Get()
         {
@@ -24,7 +24,7 @@ namespace Sync
                 _schedulerFactory = new StdSchedulerFactory(properties);
                 _jobScheduler = _schedulerFactory.GetScheduler();
             }
-            if (!_jobScheduler.IsStarted)
+            if (!_jobScheduler.IsStarted || _jobScheduler.IsShutdown || _jobScheduler.InStandbyMode)
             {
                 _jobScheduler.Start();
             }
@@ -34,7 +34,7 @@ namespace Sync
         public static bool JobExist(string key, string group)
         {
             var job_key = JobKey.Create(key, group);
-            return _jobScheduler.CheckExists(job_key);
+            return Get().CheckExists(job_key);
         }
     }
 }

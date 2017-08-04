@@ -11,29 +11,32 @@ namespace Sync
 {
     public delegate void ChangeMainStatusDelegate(string value);
 
-    public partial class frmMain : Form
+    public partial class FrmMain : Form
     {
-        Settings settings;
-        Logger logger = LogManager.GetCurrentClassLogger();
-        bool close = false;
-        string jobName = "sync_job";
+        private Settings _settings;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private bool _close;
+        private const string JobName = "sync_job";
 
-        public frmMain()
+        public FrmMain()
         {
             InitializeComponent();
-            lblCopyright.Text = "\u00A9 Piotr Kalina";
+            lblCopyright.Text = @"© Piotr Kalina";
             lblConfigPath.Text = getConfigPath();
-            settings = load();
+            _settings = load();
             JobScheduler.Get().Start();
 
-            if (!settings.IsEmpty())
+            if (!_settings.IsEmpty())
             {
-                txtFolderA.Text = settings.FolderA;
-                txtFolderB.Text = settings.FolderB;
-                txtInterval.Value = settings.Interval;
-                cmbDirection.SelectedIndex = (int)settings.Direction;
-                cmbIntervalType.SelectedIndex = (int)settings.IntervalType;
-
+                txtFolderA.Text = _settings.FolderA;
+                txtFolderB.Text = _settings.FolderB;
+                txtInterval.Value = _settings.Interval;
+                cmbDirection.SelectedIndex = (int) _settings.Direction;
+                cmbIntervalType.SelectedIndex = (int) _settings.IntervalType;
+                txtStartAtDate.Value = _settings.StartAt.Date;
+                txtStartAtTime.Value = _settings.StartAt;
+                chkSkipDeleteFolderB.Checked = _settings.SkipDeleteInFolderB;
+                chkSkipDeleteFolderA.Checked = _settings.SkipDeleteInFolderA;
 #if !DEBUG
                 hideWindow();
 #endif
@@ -41,20 +44,26 @@ namespace Sync
             }
             else
             {
-                settings.ReplicaIdFolderA = Guid.NewGuid();
-                settings.ReplicaIdFolderB = Guid.NewGuid();
+                _settings.ReplicaIdFolderA = Guid.NewGuid();
+                _settings.ReplicaIdFolderB = Guid.NewGuid();
             }
 
-            SyncJob.ChangeMainStatusCallback += new ChangeMainStatusDelegate(changeStatus);
+            SyncJob.ChangeMainStatusCallback += changeStatus;
         }
 
-        void changeStatus(string value)
+        private void changeStatus(string value)
         {
             if (lblStatusInWindow.InvokeRequired)
             {
-                lblStatusInWindow.Invoke((MethodInvoker)delegate
+                lblStatusInWindow.Invoke((MethodInvoker) delegate
                 {
                     lblStatusInWindow.Text = value;
+
+                    if (value.Length >= 64)
+                    {
+                        value = $"{value.Substring(0, 60)}...";
+                    }
+
                     notify.Text = value;
                 });
             }
@@ -69,39 +78,40 @@ namespace Sync
 
         private void btnFolderA_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fb = new FolderBrowserDialog()
+            var fb = new FolderBrowserDialog
             {
-                Description = "Wybierz folder...",
+                Description = @"Choose folder...",
                 RootFolder = Environment.SpecialFolder.MyComputer,
                 ShowNewFolderButton = true
             };
-            if (fb.ShowDialog() == DialogResult.OK)
-            {
-                settings.FolderA = fb.SelectedPath;
-                txtFolderA.Text = settings.FolderA;
-            }
+
+            if (fb.ShowDialog() != DialogResult.OK) return;
+
+            _settings.FolderA = fb.SelectedPath;
+            txtFolderA.Text = _settings.FolderA;
         }
 
         private void btnFolderB_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fb = new FolderBrowserDialog()
+            var fb = new FolderBrowserDialog
             {
-                Description = "Wybierz folder...",
+                Description = @"Choose folder...",
                 RootFolder = Environment.SpecialFolder.MyComputer,
                 ShowNewFolderButton = true
             };
-            if (fb.ShowDialog() == DialogResult.OK)
-            {
-                settings.FolderB = fb.SelectedPath;
-                txtFolderB.Text = settings.FolderB;
-            }
+
+            if (fb.ShowDialog() != DialogResult.OK) return;
+
+            _settings.FolderB = fb.SelectedPath;
+            txtFolderB.Text = _settings.FolderB;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (!save())
             {
-                MessageBox.Show("Nie udało się zapisać konfiguracji!", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Sorry, I can't save the configuration!", @"Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
             else
             {
@@ -109,7 +119,7 @@ namespace Sync
             }
         }
 
-        void hideWindow()
+        private void hideWindow()
         {
             WindowState = FormWindowState.Minimized;
             ShowInTaskbar = false;
@@ -117,7 +127,7 @@ namespace Sync
             notify.Visible = true;
         }
 
-        void showWindow()
+        private void showWindow()
         {
             WindowState = FormWindowState.Normal;
             notify.Visible = true;
@@ -126,18 +136,19 @@ namespace Sync
             Activate();
         }
 
-        bool save()
+        private bool save()
         {
             try
             {
-                var content = JsonConvert.SerializeObject(settings, Formatting.None);
-                var dirPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "kalpio", "sync");
+                var content = JsonConvert.SerializeObject(_settings, Formatting.None);
+                var dirPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "kalpio", "sync");
                 if (!Directory.Exists(dirPath))
                 {
                     Directory.CreateDirectory(dirPath);
                 }
 
-                var fileName = "config.json";
+                const string fileName = "config.json";
                 File.WriteAllText(Path.Combine(dirPath, fileName), content, Encoding.UTF8);
 
                 doSync();
@@ -146,17 +157,18 @@ namespace Sync
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
                 return false;
             }
         }
 
-        string getConfigPath()
+        private static string getConfigPath()
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "kalpio", "sync", "config.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "kalpio", "sync",
+                "config.json");
         }
 
-        Settings load()
+        private Settings load()
         {
             try
             {
@@ -169,38 +181,38 @@ namespace Sync
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                _logger.Error(ex);
             }
 
             return new Settings();
         }
 
-        void doSync()
+        private void doSync()
         {
-            logger.Debug("doSync start...");
+            _logger.Debug("doSync start...");
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHss");
 
-            if (JobScheduler.JobExist(jobName, "Workers"))
+            if (JobScheduler.JobExist(JobName, "Workers"))
             {
-                JobScheduler.Get().DeleteJob(new JobKey(jobName, "Workers"));
+                JobScheduler.Get().DeleteJob(new JobKey(JobName, "Workers"));
             }
 
-            var jobData = new JobDataMap { { "settings", settings } };
+            var jobData = new JobDataMap {{"settings", _settings}};
 
-            IJobDetail job = JobBuilder.Create<SyncJob>()
-                .WithIdentity(jobName, "Workers")
+            var job = JobBuilder.Create<SyncJob>()
+                .WithIdentity(JobName, "Workers")
                 .SetJobData(jobData)
                 .Build();
 
             var triggerKey = $"trigger_{timestamp}";
 
-            ITrigger trigger = TriggerBuilder.Create()
+            var trigger = TriggerBuilder.Create()
                 .WithIdentity(triggerKey, "Workers")
-                .WithCalendarIntervalSchedule((x) =>
+                .WithCalendarIntervalSchedule(x =>
                 {
-                    x.WithInterval(settings.Interval, (IntervalUnit)((int)settings.IntervalType));
+                    x.WithInterval(_settings.Interval, (IntervalUnit) (int) _settings.IntervalType);
                 })
-                .StartAt(settings.StartAt)
+                .StartAt(_settings.StartAt)
                 .WithPriority(1)
                 .Build();
 
@@ -214,32 +226,33 @@ namespace Sync
 
         private void notifyContextMenu_Close_Click(object sender, EventArgs e)
         {
-            close = true;
+            _close = true;
             Close();
         }
 
         private void txtInterval_ValueChanged(object sender, EventArgs e)
         {
-            settings.Interval = Convert.ToInt32(txtInterval.Value);
+            _settings.Interval = Convert.ToInt32(txtInterval.Value);
         }
 
         private void cmbIntervalType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            settings.IntervalType = (IntervalType)cmbIntervalType.SelectedIndex;
+            _settings.IntervalType = (IntervalType) cmbIntervalType.SelectedIndex;
         }
 
         private void cmbDirection_SelectedIndexChanged(object sender, EventArgs e)
         {
-            settings.Direction = (Direction)cmbDirection.SelectedIndex;
+            _settings.Direction = (Direction) cmbDirection.SelectedIndex;
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!close)
+            if (!_close)
             {
                 e.Cancel = true;
                 hideWindow();
             }
+
             JobScheduler.Get().Shutdown();
         }
 
@@ -247,12 +260,13 @@ namespace Sync
         {
             if (Directory.Exists(txtFolderA.Text))
             {
-                settings.FolderA = txtFolderA.Text;
+                _settings.FolderA = txtFolderA.Text;
                 txtFolderA.BackColor = Color.White;
             }
             else
             {
-                MessageBox.Show("Folder A - folder already exists!", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Folder A - folder already exists!", @"Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 txtFolderA.Focus();
                 txtFolderA.BackColor = Color.Red;
             }
@@ -262,12 +276,13 @@ namespace Sync
         {
             if (Directory.Exists(txtFolderB.Text))
             {
-                settings.FolderB = txtFolderB.Text;
+                _settings.FolderB = txtFolderB.Text;
                 txtFolderB.BackColor = Color.White;
             }
             else
             {
-                MessageBox.Show("Folder B - folder already exists!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Folder B - folder already exists!", @"Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 txtFolderB.Focus();
                 txtFolderB.BackColor = Color.Red;
             }
@@ -275,26 +290,36 @@ namespace Sync
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            settings = new Settings();
-            txtFolderA.Text = settings.FolderA;
-            txtFolderB.Text = settings.FolderB;
-            txtInterval.Value = settings.Interval;
-            cmbIntervalType.SelectedIndex = (int)settings.IntervalType;
-            cmbDirection.SelectedIndex = (int)settings.Direction;
-            txtStartAtDate.Value = settings.StartAt.Date;
-            txtStartAtTime.Value = settings.StartAt.Date;
+            _settings = new Settings();
+            txtFolderA.Text = _settings.FolderA;
+            txtFolderB.Text = _settings.FolderB;
+            txtInterval.Value = _settings.Interval;
+            cmbIntervalType.SelectedIndex = (int) _settings.IntervalType;
+            cmbDirection.SelectedIndex = (int) _settings.Direction;
+            txtStartAtDate.Value = _settings.StartAt.Date;
+            txtStartAtTime.Value = _settings.StartAt.Date;
         }
 
         private void txtStartAtDate_ValueChanged(object sender, EventArgs e)
         {
-            settings.StartAt = txtStartAtDate.Value.Date;
+            _settings.StartAt = txtStartAtDate.Value.Date;
         }
 
         private void txtStartAtTime_ValueChanged(object sender, EventArgs e)
         {
-            settings.StartAt = settings.StartAt
+            _settings.StartAt = _settings.StartAt
                 .AddHours(txtStartAtTime.Value.Hour)
                 .AddMinutes(txtStartAtTime.Value.Minute);
+        }
+
+        private void chkSkipDeleteFolderB_CheckedChanged(object sender, EventArgs e)
+        {
+            _settings.SkipDeleteInFolderB = chkSkipDeleteFolderB.Checked;
+        }
+
+        private void chkSkipDeleteFolderA_CheckedChanged(object sender, EventArgs e)
+        {
+            _settings.SkipDeleteInFolderA = chkSkipDeleteFolderA.Checked;
         }
     }
 }
