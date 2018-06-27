@@ -1,4 +1,6 @@
-﻿namespace Sync
+﻿using System;
+
+namespace Sync
 {
     partial class FrmMain
     {
@@ -309,6 +311,7 @@
             this.lblConfigPath.TabIndex = 17;
             this.lblConfigPath.Text = "File localization";
             this.lblConfigPath.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblConfigPath.DoubleClick += lblConfigPath_OnDoubleClick;
             // 
             // txtStartAtDate
             // 
@@ -382,7 +385,7 @@
             this.chkSkipDeleteFolderB.Name = "chkSkipDeleteFolderB";
             this.chkSkipDeleteFolderB.Size = new System.Drawing.Size(205, 21);
             this.chkSkipDeleteFolderB.TabIndex = 24;
-            this.chkSkipDeleteFolderB.Text = "Skip delete files in folder [B]";
+            this.chkSkipDeleteFolderB.Text = "Don't delete resources in folder [B] (backup folder B)";
             this.chkSkipDeleteFolderB.UseVisualStyleBackColor = true;
             this.chkSkipDeleteFolderB.CheckedChanged += new System.EventHandler(this.chkSkipDeleteFolderB_CheckedChanged);
             // 
@@ -393,7 +396,7 @@
             this.chkSkipDeleteFolderA.Name = "chkSkipDeleteFolderA";
             this.chkSkipDeleteFolderA.Size = new System.Drawing.Size(205, 21);
             this.chkSkipDeleteFolderA.TabIndex = 25;
-            this.chkSkipDeleteFolderA.Text = "Skip delete files in folder [A]";
+            this.chkSkipDeleteFolderA.Text = "Don't delete resources in folder [A] (backup folder A)";
             this.chkSkipDeleteFolderA.UseVisualStyleBackColor = true;
             this.chkSkipDeleteFolderA.CheckedChanged += new System.EventHandler(this.chkSkipDeleteFolderA_CheckedChanged);
             // 

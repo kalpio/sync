@@ -20,7 +20,7 @@ namespace Sync
         {
             if (_session == null || !_session.IsOpen) {
                 if (_sessionFactory == null) {
-                    _sessionFactory = buildSessionFactory();
+                    _sessionFactory = BuildSessionFactory();
                 }
 
                 _session = _sessionFactory.OpenSession();
@@ -29,14 +29,14 @@ namespace Sync
             return _session;
         }
 
-        static void buildSchema(NHibernate.Cfg.Configuration config)
+        static void BuildSchema(NHibernate.Cfg.Configuration config)
         {
             new SchemaUpdate(config).Execute(false, true);
             new SchemaExport(config).Create(false, false);
             //config.SetInterceptor(new SqlStatementInterceptor());
         }
 
-        private static ISessionFactory buildSessionFactory()
+        private static ISessionFactory BuildSessionFactory()
         {
             return Fluently.Configure()
                 .Database(SQLiteConfiguration.Standard
@@ -44,7 +44,7 @@ namespace Sync
                 .UsingFile(Settings.GetDbFilePath()))
                 .Mappings(m => m
                     .FluentMappings.AddFromAssemblyOf<DataAccess.Backup>())
-                .ExposeConfiguration(buildSchema)
+                .ExposeConfiguration(BuildSchema)
                 .BuildSessionFactory();
         }
     }
